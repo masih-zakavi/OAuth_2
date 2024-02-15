@@ -1,3 +1,7 @@
+'''
+Code developed for course project by Stanley Lin: https://github.com/kystanleylin
+'''
+
 import json
 import os
 import re
@@ -8,7 +12,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.sql import func
-from botocore.exceptions import NoCredentialsError, ClientError
 from flask import jsonify, request
 
 Base = declarative_base()
@@ -75,20 +78,36 @@ class MySQLDataService:
         self.Session = sessionmaker(bind=self.engine)
         Base.metadata.create_all(self.engine)
 
-    def publish_to_sns(self, message: str):
-        topic_arn = 'arn:aws:sns:us-east-2:073127164341:delete_admin'
-        sns = boto3.client('sns', region_name='us-east-2')  
-
-        response = sns.publish(
-            TopicArn=topic_arn,
-            Message=message
-        )
-
-        return response
-
     def reset_database(self):
         Base.metadata.drop_all(self.engine)
         Base.metadata.create_all(self.engine)
+
+
+    def add_feedback(self, name, email, text):
+        session = self.Session()
+
+        if not text:
+            session.close()
+            return "Feedback text cannot be null", 400
+        
+        if email and not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            session.close()
+            return "Invalid email format", 400
+        
+        feedback = Feedback(name=name, email=email, text=text)
+
+        session.add(feedback)
+        
+        try:
+            session.commit()
+            feedback_data = feedback.serialize()
+            session.close()
+            return feedback_data, 200  
+        except (IntegrityError, SQLAlchemyError) as e:
+            print(f"Got Error {e}")
+            session.rollback()
+            session.close()
+            return f"Error adding feedback: {str(e)}", 500
 
     # Admin Resources
 
@@ -107,7 +126,6 @@ class MySQLDataService:
             return "Admin not activated", 400
         
         return admin.serialize()
-
 
     def get_all_admin(self):
         session = self.Session()
@@ -172,10 +190,6 @@ class MySQLDataService:
             admin.isDeleted = True
             try:
                 session.commit()
-                try:
-                    self.publish_to_sns(f'Admin {admin.email} has been deleted')
-                except (NoCredentialsError, ClientError) as e:
-                    print(f"An error occurred while publishing to SNS: {e}")
                 session.close()
                 return "Successfully deactivated an admin", 200
             except (IntegrityError, SQLAlchemyError):

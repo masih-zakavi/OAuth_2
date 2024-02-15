@@ -23,19 +23,8 @@ app = FastAPI()
 site_mgmt = MySQLDataService()
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-#CLIENT_ID = os.environ["CLIENT_ID"]
-#CLIENT_SECRET = os.environ["CLIENT_SECRET"]
-#OAUTH_URL = os.environ["OAUTH_URL"]
 App_port = 8084
 DB_URI = "http://127.0.0.1:8080"
-'''
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitemgmt.db'  
-app.config['SQLALCHEMY_BINDS'] = {
-    'sitemgmt_db': 'sqlite:///site_mgmt.db'
-}
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-'''
 
 with open('./client_secret.json') as json_file:
     data = json.load(json_file)
@@ -59,6 +48,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 
 templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 session = {}
 
@@ -167,6 +157,33 @@ async def dashboard(request: Request,
 
     return templates.TemplateResponse("protected_area.html",
      context={"request": request, "user_name": current_user["name"]})
+
+
+@app.get("/add_feedback", response_class=HTMLResponse)
+async def render_add_feedback_form(request: Request):
+    """
+    add_feedback: adds feedback to the database
+    """
+    print("Reached the render function")
+    return templates.TemplateResponse(
+        "add_feedback_form.html", {"request": request})
+
+
+@app.post("/add_feedback", response_class=HTMLResponse)
+async def add_feedback(request: Request, name: str = Form(...), 
+    email: str = Form(...), text: str = Form(...)):
+
+    result = site_mgmt.add_feedback(name, email, text)
+
+    if result[1] == 200:
+        message = "Your comment was submitted! An admin will get back to you shortly."
+    else:
+        message = "Oops! There was an error submitting your feedback."
+
+    return templates.TemplateResponse(
+        "add_feedback_form.html",
+        {"request": request, "result": message}
+    )
 
 
 @app.get("/add_admin", response_class=HTMLResponse)
