@@ -1,10 +1,9 @@
-<!-- update_admin_form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MalariaStats Update Admin</title>
+    <title>View Feedback</title>
     <style>
         body {
             background: url('/static/background.png') no-repeat center center fixed;
@@ -58,7 +57,6 @@
             background-color: #45a049;
         }
 
-        /* Adjust the opacity for the background image */
         body::before {
             content: "";
             background: rgba(255, 255, 255, 0.75);
@@ -70,7 +68,6 @@
             z-index: -1;
         }
 
-        /* Style for the container box */
         .response-container {
             max-width: 600px;
             margin: 20px auto;
@@ -80,7 +77,6 @@
             text-align: center;
         }
         
-        /* Move the "Back to Dashboard" button to the bottom left */
         .back-to-dashboard-btn {
             display: inline-block;
             padding: 10px 20px;
@@ -95,34 +91,23 @@
         }
 
         .back-to-dashboard-btn:hover {
-            background-color: #c0392b; /* Darker red on hover */
+            background-color: #c0392b; 
         }
 
     </style>
 </head>
 <body>
-    <h1>Update MalariaStats Admin</h1>
-    <p>Enter the old and new email for the admin you want to update:</p>
-    <form method="post">
-        <label for="old_email">Old Email:</label>
-        <input type="email" id="old_email" name="old_email" required>
-        <br>
-        <label for="new_email">New Email:</label>
-        <input type="email" id="new_email" name="new_email" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-
-    <!-- Display the result from the server -->
-    <div id="result" class="response-container">
-        {% if result %}
-            <p>{{ result }}</p>
-        {% endif %}
-    </div>
-
-    <!-- Add a button to redirect to the admin home page -->
+    <h1>Feedback Received</h1>
+    {% for feedback in feedback_list %}
+        <div class="feedback-entry">
+            <h2>Feedback by: {{ feedback.name }}</h2>
+            <p>Email: <a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a></p>
+            <p>Comment: {{ feedback.text }}</p>
+            <p>Submitted on: {{ feedback.submission_date }}</p>
+        </div>
+    {% else %}
+        <p>No feedback has been submitted yet.</p>
+    {% endfor %}
     <a href="/protected_area" class="back-to-dashboard-btn">Back to Dashboard</a>
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </body>
 </html>

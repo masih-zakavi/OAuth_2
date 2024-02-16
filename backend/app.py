@@ -1,5 +1,6 @@
 '''
-Code developed for course project by Stanley Lin: https://github.com/kystanleylin
+The file is based on original code by Stanley Lin: https://github.com/kystanleylin
+for class COMS 6156: Cloud Computing taken Fall 2023
 '''
 
 import json
@@ -81,6 +82,13 @@ class MySQLDataService:
     def reset_database(self):
         Base.metadata.drop_all(self.engine)
         Base.metadata.create_all(self.engine)
+
+
+    def get_all_feedback(self):
+        session = self.Session()
+        feedback_list = session.query(Feedback).all()
+        session.close()
+        return [feedback.serialize() for feedback in feedback_list]
 
 
     def add_feedback(self, name, email, text):

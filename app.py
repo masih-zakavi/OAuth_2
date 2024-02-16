@@ -1,6 +1,3 @@
-"""
-Google Login Example
-"""
 import os
 import uvicorn
 import json
@@ -16,8 +13,6 @@ from fastapi.staticfiles import StaticFiles
 from functools import wraps
 
 from backend.app import MySQLDataService
-
-#import env
 
 app = FastAPI()
 site_mgmt = MySQLDataService()
@@ -161,10 +156,7 @@ async def dashboard(request: Request,
 
 @app.get("/add_feedback", response_class=HTMLResponse)
 async def render_add_feedback_form(request: Request):
-    """
-    add_feedback: adds feedback to the database
-    """
-    print("Reached the render function")
+
     return templates.TemplateResponse(
         "add_feedback_form.html", {"request": request})
 
@@ -189,9 +181,7 @@ async def add_feedback(request: Request, name: str = Form(...),
 @app.get("/add_admin", response_class=HTMLResponse)
 async def render_add_admin_form(request: Request,
  current_user: dict=Depends(get_current_user)):
-    """
-    add_admin: adds admin with user email to the admin database
-    """
+
     if isinstance(current_user, str):
         return errorPage(request)
 
@@ -212,9 +202,7 @@ async def add_admin(request: Request, email: str = Form(...)):
 @app.get("/delete_admin", response_class=HTMLResponse)
 async def render_delete_admin_form(request: Request,
  current_user: dict=Depends(get_current_user)):
-    """
-    delete_admin: deletes admin by user email
-    """
+
     if isinstance(current_user, str):
         return errorPage(request)
 
@@ -235,9 +223,7 @@ async def delete_admin(request: Request, email: str = Form(...)):
 @app.get("/update_admin", response_class=HTMLResponse)
 async def render_update_admin_form(request: Request,
  current_user: dict=Depends(get_current_user)):
-    """
-    delete_admin: deletes admin by user email
-    """
+
     if isinstance(current_user, str):
         return errorPage(request)
 
@@ -257,6 +243,19 @@ async def update_admin(request: Request, old_email: str = Form(...),
     )
 
 
+@app.get("/view_feedback", response_class=HTMLResponse)
+async def render_get_feedback(request: Request,
+    current_user: dict=Depends(get_current_user)):
+
+    if isinstance(current_user, str):
+        return errorPage(request)
+
+    feedback_data = site_mgmt.get_all_feedback()
+
+    return templates.TemplateResponse("get_feedback.html",
+        {"request": request, "feedback_list": feedback_data})
+
+
 @app.get("/logout", response_class = HTMLResponse)
 async def logout(request: Request):
     session = {}
@@ -266,4 +265,3 @@ async def logout(request: Request):
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=App_port)
     #app.run(debug=True, port=App_port)
-

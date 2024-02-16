@@ -3,7 +3,7 @@
     <title>MalariaStats Admin Login</title>
     <style>
         body {
-            background: url('https://upload.wikimedia.org/wikipedia/commons/a/ae/World-map-of-past-and-current-malaria-prevalence-world-development-report-2009.png') no-repeat center center fixed; /* Add the URL to your background image */
+            background: url('/static/background.png') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Arial', sans-serif;
             color: #000; /* Set text color to black */
@@ -22,11 +22,12 @@
             margin: 0 auto;
         }
 
-        form {
+        form, .button {
             margin-top: 20px;
         }
 
-        button {
+        button, .button {
+            display:  inline-block;
             padding: 10px 20px;
             font-size: 16px;
             background-color: #4CAF50; /* Green */
@@ -34,9 +35,11 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
+            text-align: center;
         }
 
-        button:hover {
+        button:hover, .button:hover {
             background-color: #45a049;
         }
 
@@ -55,10 +58,14 @@
     </style>
 </head>
 <body>
-<h1>Welcome</h1>
-<p>This page is for MalariaStats Admins. To login using your Columbia UNI, please click the login button below.</p>
+<h1>Welcome!</h1>
+<p>
+If you are an admin, click on the Login button below to sign-in using your Columbia email.
+If you want to submit feedback, please click on the Add Feedback button.
+</p>
 <form action="/login" method="get">
     <button type="submit">Login</button>
 </form>
+<a href="/add_feedback" class="button">Add Feedback</a>
 </body>
 </html>

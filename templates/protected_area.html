@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/a/ae/World-map-of-past-and-current-malaria-prevalence-world-development-report-2009.png') no-repeat center center fixed;
+            background: url('/static/background.png') no-repeat center center fixed;
             background-size: cover;
             opacity: 1;
             color: #000;
@@ -85,6 +85,20 @@
             background-color: #2980b9; /* Darker blue on hover */
         }
 
+        .view-feedback-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db; /* Blue color */
+            color: #fff; /* White text */
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .view-feedback-btn:hover {
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+
         /* Adjust the opacity for the background image */
         body::before {
             content: "";
@@ -109,6 +123,7 @@
         <a href="/add_admin" class="add-admin-btn">Add Admin</a>
         <a href="/update_admin" class="add-admin-btn">Update Admin</a>
         <a href="/delete_admin" class="delete-admin-btn">Delete Admin</a>
+        <a href="/view_feedback" class="view-feedback-btn">View Feedback</a>
         <a href="/logout" class="logout-btn">Logout</a>
     </div>
 </body>
